@@ -44,7 +44,7 @@ public class PersonService {
         List<DtoPerson> dtoPerson = person.stream()
                 .map(persona -> modelMapper.map(person, DtoPerson.class))
                         .collect(Collectors.toList());
-        return dtoPerson;//retorna el valor
+        return dtoPerson;
     }
 
     public DtoPerson findById(Long id) {
@@ -52,7 +52,7 @@ public class PersonService {
         if (person.isPresent()) {
             DtoPerson dtoPerson = modelMapper.map(person.get(), DtoPerson.class);
             return dtoPerson;
-        }
+        } //debo retornar null?
        /* Optional<DtoPerson> dtoPerson = person.stream()
                 .map(persona -> modelMapper.map(person, DtoPerson.class))
                 .filter( idPerson -> idPerson.getIdPersonaIdentify()== id )
