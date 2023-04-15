@@ -1,12 +1,11 @@
 package com.bank.bancoDemo.services;
 import com.bank.bancoDemo.dto.DtoPerson;
+import com.bank.bancoDemo.dto.DtoPersonAll;
 import com.bank.bancoDemo.models.dao.ImplePersonDao;
 import com.bank.bancoDemo.models.entity.Person;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +38,6 @@ public class PersonService {
         return dtoPerson;: Finalmente, la lista "dtoPerson" se devuelve como el resultado del método findAll(). Es decir, el método retorna una lista de objetos DtoPerson que se han mapeado desde una lista de objetos Person.
     */
     public List<DtoPerson> findAll() {
-
         List<Person> person = implePersonaDao.findAll();
         List<DtoPerson> dtoPerson = person.stream()
                 .map(persona -> modelMapper.map(person, DtoPerson.class))
@@ -49,44 +47,44 @@ public class PersonService {
 
     public DtoPerson findById(Long id) {
         Optional<Person> person = implePersonaDao.findById(id);
-        if (person.isPresent()) {
+        if (person.isEmpty()) {
+            throw new RuntimeException();
+        }
             DtoPerson dtoPerson = modelMapper.map(person.get(), DtoPerson.class);
-            return dtoPerson;
-        } //debo retornar null?
-       /* Optional<DtoPerson> dtoPerson = person.stream()
-                .map(persona -> modelMapper.map(person, DtoPerson.class))
-                .filter( idPerson -> idPerson.getIdPersonaIdentify()== id )
-                .findFirst(); //filter trae una lista pero se requiere solo un id y por eso se usa el metodo findFirst
-        */
-        return null;
+            return dtoPerson; //INVERSIÓN DE IF PARA PODER RETORNAR UN DTO
     }
+    /* Optional<DtoPerson> dtoPerson = person.stream()
+             .map(persona -> modelMapper.map(person, DtoPerson.class))
+             .filter( idPerson -> idPerson.getIdPersonaIdentify()== id )
+             .findFirst(); //filter trae una lista pero se requiere solo un id y por eso se usa el metodo findFirst
+     */
+    public void save(DtoPersonAll dtoPersonAll){ //paso como parámetro un dto (tenia a dto pero inteliji sugirí cambiarlo a person por el retorno
 
-    public Person save(Person person){
-        Optional<Person> personExist;
-        personExist = implePersonaDao.findById(person.getIdPersonaIdentify());
+        Person person = modelMapper.map(dtoPersonAll, Person.class); //quiero transformar un dto a un objeto de tipo entidad
+        Optional<Person> personExist = implePersonaDao.findById(dtoPersonAll.getIdPersonaIdentify()); //verificar si existe
         if(personExist.isPresent()){
-            System.out.println("ya existe usuario");
+            throw new RuntimeException();
         }
-        return implePersonaDao.save(person);
-    }
+        implePersonaDao.save(person);
+    }  //va a ser un metodo void porque no necesito retornar al cliente la información que ya ingresó
 
-    public void update(Long id, Person person){
-        Optional<Person> personUpdate = implePersonaDao.findById(id);
-        if(personUpdate.isPresent()) {
-            Person findPerson = personUpdate.get();
-            findPerson.setName(person.getName());
-            findPerson.setLastName(person.getLastName());
-            findPerson.setAdress(person.getAdress());
-            //findPerson.setGender(Person.getGender());
-            findPerson.setAge(findPerson.getAge());
-            findPerson.setNumberT(person.getNumberT());
+
+    public void update(DtoPersonAll dtoPersonAll){
+        Person person = modelMapper.map(dtoPersonAll, Person.class);
+        Optional<Person> personUpdate = implePersonaDao.findById(dtoPersonAll.getIdPersonaIdentify());
+        if(personUpdate.isEmpty()) {
+            throw new RuntimeException();
         }
-
-            //quiero implementar la clase dto para que no modifique todos los campo
+            implePersonaDao.save(person);
     }
 
     public void delete(Long id) {
+        Optional<Person> personDelete = implePersonaDao.findById(id);
+        if(personDelete.isEmpty()) {
+            throw new RuntimeException();
+        }
 
+        implePersonaDao.delete(personDelete.get()); //para extraer el valor de optional uso GET!!!!
     }
 
 }

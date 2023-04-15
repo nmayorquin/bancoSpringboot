@@ -1,5 +1,7 @@
 package com.bank.bancoDemo.models.entity;
 
+import com.bank.bancoDemo.utils.AccountStatus;
+import com.bank.bancoDemo.utils.AccountType;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -7,28 +9,25 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name="accounts")
-public class Account extends Customer {
+public class Account {
     @Id
     @Column(name = "account_Id")
-    private Long accontId;
+    private Long accountId;
     @Column(name = "account_number")
     private String accountNumber;
 
-    private enum AccountType{
-        SavingsAccount, checkingAccount
-    }
+    @Enumerated(EnumType.STRING)
+    private AccountType accountType;
 
     @Column(name = "account_Balance")
     private long accountBalance;
 
+    @Enumerated(EnumType.STRING)
+    private AccountStatus accountStatus;
 
-    private enum accountStatus{
-        TRUE, FALSE
-    }
-
-    @JoinColumn(name = "fk_customer")
+    @JoinColumn(name = "fk_people")
     @ManyToOne
-    private Customer customer;
+    private Person person;
 
 
 }
