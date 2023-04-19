@@ -37,12 +37,12 @@ public class PersonService {
 
         return dtoPerson;: Finalmente, la lista "dtoPerson" se devuelve como el resultado del método findAll(). Es decir, el método retorna una lista de objetos DtoPerson que se han mapeado desde una lista de objetos Person.
     */
-    public List<DtoPerson> findAll() {
+    public List<DtoPersonAll> findAll() {
         List<Person> person = implePersonaDao.findAll();
-        List<DtoPerson> dtoPerson = person.stream()
-                .map(persona -> modelMapper.map(person, DtoPerson.class))
+        List<DtoPersonAll> dtoPersonAll = person.stream()
+                .map(persona -> modelMapper.map(persona, DtoPersonAll.class))
                         .collect(Collectors.toList());
-        return dtoPerson;
+        return dtoPersonAll;
     }
 
     public DtoPerson findById(Long id) {
@@ -58,12 +58,11 @@ public class PersonService {
              .filter( idPerson -> idPerson.getIdPersonaIdentify()== id )
              .findFirst(); //filter trae una lista pero se requiere solo un id y por eso se usa el metodo findFirst
      */
-    public void save(DtoPersonAll dtoPersonAll){ //paso como parámetro un dto (tenia a dto pero inteliji sugirí cambiarlo a person por el retorno
-
+    public void save(DtoPersonAll dtoPersonAll){ //paso como parámetro un dto
         Person person = modelMapper.map(dtoPersonAll, Person.class); //quiero transformar un dto a un objeto de tipo entidad
         Optional<Person> personExist = implePersonaDao.findById(dtoPersonAll.getIdPersonaIdentify()); //verificar si existe
         if(personExist.isPresent()){
-            throw new RuntimeException();
+            throw new RuntimeException("no se puede guardar, usuario ya existe");
         }
         implePersonaDao.save(person);
     }  //va a ser un metodo void porque no necesito retornar al cliente la información que ya ingresó
