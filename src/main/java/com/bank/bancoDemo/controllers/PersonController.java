@@ -32,9 +32,24 @@ public class PersonController {
                 List<DtoPersonAll> dtoPersonAll = personService.findAll();
                 return ResponseEntity.ok(dtoPersonAll);
         }
+
         @GetMapping("/people/{id}")
         public DtoPerson showById(@PathVariable long id){
                 return personService.findById(id);
+        }
+
+        @PutMapping("/people/{id}")
+        public ResponseEntity<Void> updatePerson(@PathVariable long id, @RequestBody DtoPersonAll dtoPersonAll){
+                personService.update(dtoPersonAll);
+                return ResponseEntity.ok().build();
+        }
+
+
+        @DeleteMapping("/delete/{id}")
+        public ResponseEntity<Void> deletePerson(@PathVariable long id){
+                personService.delete(id);
+                return ResponseEntity.ok().build();
+
         }
 
 }
