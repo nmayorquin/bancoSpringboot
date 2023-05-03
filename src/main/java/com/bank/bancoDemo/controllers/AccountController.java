@@ -1,5 +1,6 @@
 package com.bank.bancoDemo.controllers;
 
+import com.bank.bancoDemo.dto.DtoAccountPersona;
 import com.bank.bancoDemo.dto.DtoAccounts;
 import com.bank.bancoDemo.dto.DtoAccountsAll;
 import com.bank.bancoDemo.services.AccountService;
@@ -31,8 +32,8 @@ public class AccountController {
     }
 
     @GetMapping ("/accounts/{id}")
-    public DtoAccountsAll showAccountById(@PathVariable Long id){
-        return accountService.findByIdAccount(id); //REVISAR!
+    public ResponseEntity<DtoAccountPersona> showAccountById(@PathVariable Long id){
+        return ResponseEntity.ok(accountService.findByIdAccount(id));
     }
 
 }

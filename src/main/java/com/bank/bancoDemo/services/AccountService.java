@@ -1,11 +1,13 @@
 package com.bank.bancoDemo.services;
 
+import com.bank.bancoDemo.dto.DtoAccountPersona;
 import com.bank.bancoDemo.dto.DtoAccountsAll;
 import com.bank.bancoDemo.models.dao.ImpleAccountDao;
 import com.bank.bancoDemo.models.dao.ImplePersonDao;
 import com.bank.bancoDemo.models.entity.Account;
 import com.bank.bancoDemo.models.entity.Person;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,14 +36,18 @@ public class AccountService {
         return dtoAccountsAlls;
     }
 
-
-    public DtoAccountsAll findByIdAccount(Long id){
+    public DtoAccountPersona findByIdAccount(Long id){
         Optional<Account> account = impleAccountDao.findById(id);
         if(account.isEmpty()){
             throw new RuntimeException("cuenta no existe");
         }
-        DtoAccountsAll dtoAccountsAll= modelMapper.map(account.get(), DtoAccountsAll.class);
-        return dtoAccountsAll;
+        TypeMap<Account, DtoAccountPersona> propertyMapper = modelMapper.createTypeMap(Account.class, DtoAccountPersona.class);
+        propertyMapper.addMappings(
+                mapper -> mapper.map(src -> src.getPersonId(), DtoAccountPersona::setPersonId)
+        );
+
+        DtoAccountPersona dtoAccountPersona= modelMapper.map(account.get(), DtoAccountPersona.class);
+        return dtoAccountPersona;
     }
 
     public void saveAccount (DtoAccountsAll dtoAccountsAll){
